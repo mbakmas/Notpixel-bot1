@@ -50,7 +50,7 @@ class Tapper:
         self.fromstart = 0
         self.checked = [False] * 9
         self.balance = 0
-        self.color_list = ["#E46E6E", "#FFD635" , "#7EED56", "#00CCC0", "#51E9F4", "#000000"]
+        self.color_list = ["#FFD635" , "#7EED56", "#00CCC0", "#51E9F4", "#94B3FF", "#000000"]
         self.multi_thread = multi_thread
         self.my_ref = "f6624523270"
 
@@ -151,8 +151,11 @@ class Tapper:
             print(response.json())
             return None
 
-    def generate_random_color(self):
-        return random.choice(self.color_list)
+    def generate_random_color(self, color):
+        a = random.choice(self.color_list)
+        while a == color:
+            a = random.choice(self.color_list)
+        return a
 
     def generate_random_pos(self):
         return randint(1, 1000000)
@@ -172,13 +175,14 @@ class Tapper:
     def repaint(self, session: requests.Session, chance_left):
         #  print("starting to paint")
         if settings.X3POINTS:
-            data = self.get_cor(session)
+            
             payload = {
                 "newColor": data[0],
                 "pixelId": data[1]
             }
+            data = self.get_cor(session)
         else:
-            data = [str(self.generate_random_color()), int(self.generate_random_pos())]
+            data = [str(self.generate_random_color(data[0])), int(self.generate_random_pos())]
             payload = {
                 "newColor": data[0],
                 "pixelId": data[1]
@@ -203,9 +207,9 @@ class Tapper:
                 "newColor": data[0],
                 "pixelId": data[1]
             }
-            data = self.get_cor(session)
+            
         else:
-            data1 = [str(self.generate_random_color()), int(self.generate_random_pos())]
+            data1 = [str(self.generate_random_color(data[0])), int(self.generate_random_pos())]
             payload = {
                 "newColor": data1[0],
                 "pixelId": data[1]
@@ -216,6 +220,7 @@ class Tapper:
                 logger.success(
                     f"{self.session_name} | <green>Painted <cyan>{data[1]}</cyan> successfully new color: <cyan>{data[0]}</cyan> | Earned <light-blue>{int(response.json()['balance']) - self.balance}</light-blue> | Balace: <light-blue>{response.json()['balance']}</light-blue> | Repaint left: <yellow>{chance_left}</yellow></green>")
                 self.balance = int(response.json()['balance'])
+                data = self.get_cor(session)
             else:
                 logger.success(
                     f"{self.session_name} | <green>Painted <cyan>{data[1]}</cyan> successfully new color: <cyan>{data1[0]}</cyan> | Earned <light-blue>{int(response.json()['balance']) - self.balance}</light-blue> | Balace: <light-blue>{response.json()['balance']}</light-blue> | Repaint left: <yellow>{chance_left}</yellow></green>")
