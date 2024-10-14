@@ -42,6 +42,7 @@ class Tapper:
         self.balace = 0
         self.maxtime = 0
         self.fromstart = 0
+        self.color_list = ["#E46E6E", "#FFD635"]
         self.balance = 0
         self.checked = [False] * 5
         self.multi_thread = multi_thread
@@ -75,10 +76,8 @@ class Tapper:
             return None
 
     def generate_random_color(self):
-        r = randint(0, 255)
-        g = randint(0, 255)
-        b = randint(0, 255)
-        return "#{:02X}{:02X}{:02X}".format(r, g, b)
+   
+        return random.choice(self.color_list)
 
     def generate_random_pos(self):
         return randint(1, 1000000)
@@ -128,6 +127,7 @@ class Tapper:
                 "newColor": data[0],
                 "pixelId": data[1]
             }
+            data = self.get_cor(session)
         else:
             data1 = [str(self.generate_random_color()), int(self.generate_random_pos())]
             payload = {
@@ -140,6 +140,7 @@ class Tapper:
                 logger.success(
                     f"{self.session_name} | <green>Painted <cyan>{data[1]}</cyan> successfully new color: <cyan>{data[0]}</cyan> | Earned <light-blue>{int(response.json()['balance']) - self.balance}</light-blue> | Balace: <light-blue>{response.json()['balance']}</light-blue> | Repaint left: <yellow>{chance_left}</yellow></green>")
                 self.balance = int(response.json()['balance'])
+                
             else:
                 logger.success(
                     f"{self.session_name} | <green>Painted <cyan>{data[1]}</cyan> successfully new color: <cyan>{data1[0]}</cyan> | Earned <light-blue>{int(response.json()['balance']) - self.balance}</light-blue> | Balace: <light-blue>{response.json()['balance']}</light-blue> | Repaint left: <yellow>{chance_left}</yellow></green>")
@@ -239,7 +240,7 @@ class Tapper:
                                     self.repaintV2(session, total_chance, i, data)
                                 else:
                                     self.repaint(session, total_chance)
-                                sleep_ = random.uniform(1, 2)
+                                sleep_ = random.uniform(0.5, 0.8)
                                 logger.info(f"{self.session_name} | Sleep <cyan>{sleep_}</cyan> before continue...")
                                 await asyncio.sleep(sleep_)
 

@@ -50,6 +50,7 @@ class Tapper:
         self.fromstart = 0
         self.checked = [False] * 9
         self.balance = 0
+        self.color_list = ["#E46E6E", "#FFD635" , "#7EED56", "#00CCC0", "#51E9F4", "#000000"]
         self.multi_thread = multi_thread
         self.my_ref = "f6624523270"
 
@@ -151,10 +152,7 @@ class Tapper:
             return None
 
     def generate_random_color(self):
-        r = randint(0, 255)
-        g = randint(0, 255)
-        b = randint(0, 255)
-        return "#{:02X}{:02X}{:02X}".format(r, g, b)
+        return random.choice(self.color_list)
 
     def generate_random_pos(self):
         return randint(1, 1000000)
@@ -200,11 +198,12 @@ class Tapper:
             logger.warning(f"{self.session_name} | Faled to repaint: {response.status_code}")
 
     def repaintV2(self, session: requests.Session, chance_left, i, data):
-        if i % 2 == 0:
+        if i % 2 == 0:      
             payload = {
                 "newColor": data[0],
                 "pixelId": data[1]
             }
+            data = self.get_cor(session)
         else:
             data1 = [str(self.generate_random_color()), int(self.generate_random_pos())]
             payload = {
@@ -315,7 +314,7 @@ class Tapper:
                                     self.repaintV2(session, total_chance, i, data)
                                 else:
                                     self.repaint(session, total_chance)
-                                sleep_ = random.uniform(1, 2)
+                                sleep_ = random.uniform(0.5, 0.8)
                                 logger.info(f"{self.session_name} | Sleep <cyan>{sleep_}</cyan> before continue...")
                                 await asyncio.sleep(sleep_)
 
